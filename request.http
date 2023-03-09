@@ -1,0 +1,32 @@
+// USUARIOS
+###
+POST http://localhost:3001/api/student HTTP/1.1
+Content-Type: application/json
+
+{
+    "nombre": "Jorge Mario",
+    "apellido": "Alzate Araque",
+    "cedula": "1192918606",
+    "carrera": "Ingenieria de Sistemas"
+}
+
+###
+GET http://localhost:3001/api/student HTTP/1.1
+
+###
+GET http://localhost:3001/api/student/6409232b9262d077c9c03706 HTTP/1.1
+
+###
+PUT http://localhost:3001/api/student/6409232b9262d077c9c03706 HTTP/1.1
+Content-Type: application/json
+
+{
+    "nombre": "Jorge Mario",
+    "apellido": "Alzate Araque",
+    "cedula": "1192918606",
+    "carrera": "Ingenieria Industrial"
+}
+
+### 
+DELETE  http://localhost:3001/api/student/6409232b9262d077c9c03706 HTTP/1.1
+

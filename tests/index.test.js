@@ -2,23 +2,24 @@ const app = require("../src/app");
 const request = require("supertest")
 const mongoose = require('mongoose');
 const Student = require('../src/models/student');
+require('dotenv').config();
 
+beforeEach(async () => {
+   jest.setTimeout(30000)
+   // Conecta a una base de datos de prueba
+   await mongoose.connect(process.env.MONGODB_URI, {
+     useNewUrlParser: true,
+     useUnifiedTopology: true,
+   });
+ });
+
+ afterEach(async () => {
+   // Limpia la base de datos después de cada prueba
+   await Student.deleteMany({});
+   await mongoose.connection.close();
+ });
 
 describe("GET /api/student ", () => {
-
-   beforeEach(async () => {
-      // Conecta a una base de datos de prueba
-      await mongoose.connect('mongodb+srv://Students:Proyectox10@students.jgzsh81.mongodb.net/?retryWrites=true&w=majority', {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
-    });
-  
-    afterEach(async () => {
-      // Limpia la base de datos después de cada prueba
-      await Student.deleteMany({});
-      await mongoose.connection.close();
-    });
 
    const student = new Student({ nombre: 'Simon', apellido: 'Londoño', cedula:"123456789", carrera:"Ingenieria de Sistemas" });
 
@@ -42,21 +43,6 @@ describe("GET /api/student ", () => {
 
 describe("POST /api/student", () => {
 
-   beforeEach(async () => {
-      jest.setTimeout(30000)
-      // Conecta a una base de datos de prueba
-      await mongoose.connect('mongodb+srv://Students:Proyectox10@students.jgzsh81.mongodb.net/?retryWrites=true&w=majority', {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
-    });
-  
-    afterEach(async () => {
-      // Limpia la base de datos después de cada prueba
-      await Student.deleteMany({});
-      await mongoose.connection.close();
-    });
-
     const newStudent = { nombre: 'Simon', apellido: 'Londoño', cedula:"123456789", carrera:"Ingenieria de Sistemas" };
 
    test("crear un nuevo estudiante", async () => {
@@ -74,21 +60,6 @@ describe("POST /api/student", () => {
 
 
 describe ("PUT /api/student", () => {
-
-   beforeEach(async () => {
-      jest.setTimeout(30000)
-      // Conecta a una base de datos de prueba
-      await mongoose.connect('mongodb+srv://Students:Proyectox10@students.jgzsh81.mongodb.net/?retryWrites=true&w=majority', {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
-    });
-  
-    afterEach(async () => {
-      // Limpia la base de datos después de cada prueba
-      await Student.deleteMany({});
-      await mongoose.connection.close();
-    });
 
    const student = new Student({ nombre: 'Simon', apellido: 'Londoño', cedula:"123456789", carrera:"Ingenieria Industrial" });
 
@@ -114,21 +85,6 @@ describe ("PUT /api/student", () => {
 
 
 describe ("DELETE /api/student", () => {
-
-   beforeEach(async () => {
-      jest.setTimeout(30000)
-      // Conecta a una base de datos de prueba
-      await mongoose.connect('mongodb+srv://Students:Proyectox10@students.jgzsh81.mongodb.net/?retryWrites=true&w=majority', {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
-    });
-  
-    afterEach(async () => {
-      // Limpia la base de datos después de cada prueba
-      await Student.deleteMany({});
-      await mongoose.connection.close();
-    });
 
    const student = new Student({ nombre: 'Simon', apellido: 'Londoño', cedula:"123456789", carrera:"Ingenieria Industrial" });
 

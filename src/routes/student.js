@@ -6,18 +6,11 @@ const studentSchema = require("../models/student");
 router.post("/student", async (req, res) => {
   try {
     const student = studentSchema(req.body);
-    /*
-    const users = userSchema({
-        email: user.email,
-        name: user.name,
-        password: await bcryptjs.hashSync(user.password, 8),
-        tipo: user.tipo
-    })
-    */
     student
       .save()
       .then((data) => res.json(data))
       .catch((error) => res.json({ message: error }));
+
   } catch (error) {
     res.status(500).send({
       ok: false,
@@ -83,7 +76,7 @@ router.delete("/student/:id", (req, res) => {
   try {
     const { id } = req.params;
     studentSchema
-      .remove({ _id: id })
+      .deleteOne({ _id: id })
       .then((data) => res.json(data))
       .catch((error) => res.json({ message: error }));
   } catch (error) {

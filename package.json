@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "testpost": "jest test/testPost.test.js",
     "start": "node src/index.js",
     "dev": "nodemon src/index.js"
   },

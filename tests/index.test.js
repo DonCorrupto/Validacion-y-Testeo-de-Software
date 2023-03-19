@@ -43,7 +43,7 @@ describe("GET /api/student ", () => {
    const student = new Student({ nombre: 'Simon', apellido: 'Londoño', cedula: "123456789", carrera: "Ingenieria de Sistemas" });
 
    test("deberia retornar todos los estudiantes", async () => {
-
+      await student.save();
       const response = await request(app).get("/api/student")
 
       expect(response.statusCode).toBe(200);

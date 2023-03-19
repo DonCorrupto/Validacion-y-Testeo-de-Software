@@ -5,14 +5,18 @@ const Student = require('../src/models/student');
 
 beforeAll(async () => {
 
-   await mongoose.connect(process.env.MONGODB_URI, {});
+   await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+   });
 });
- 
+
 afterAll(async () => {
 
+   await Student.deleteMany({});
    await mongoose.disconnect();
 });
- 
+
 
 
 
@@ -39,7 +43,6 @@ describe("GET /api/student ", () => {
    const student = new Student({ nombre: 'Simon', apellido: 'Londoño', cedula: "123456789", carrera: "Ingenieria de Sistemas" });
 
    test("deberia retornar todos los estudiantes", async () => {
-      await student.save();
 
       const response = await request(app).get("/api/student")
 

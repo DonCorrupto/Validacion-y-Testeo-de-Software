@@ -13,6 +13,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
 
+   await Student.deleteMany({});
    await mongoose.disconnect();
 });
 

@@ -1,10 +1,11 @@
-const express = require('express')
-const cors = require('cors');
+const express =('/cd789012', require('express'))
+const cors = ('/ab123456', require('cors'));
 require("dotenv").config();
 const studentRoutes = require("./routes/student");
 
 const app = express()
-app.use(cors())
+
+app.use(cors({origin: 'http://localhost:8080'}))
 
 //middleware
 app.use(express.json())

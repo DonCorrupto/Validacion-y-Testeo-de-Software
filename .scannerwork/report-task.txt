@@ -3,5 +3,5 @@ projectKey=DonCorrupto_Validacion
 serverUrl=https://sonarcloud.io
 serverVersion=8.0.0.39431
 dashboardUrl=https://sonarcloud.io/dashboard?id=DonCorrupto_Validacion
-ceTaskId=AYcWEh9nWIiyBPQ-l1Zg
-ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AYcWEh9nWIiyBPQ-l1Zg
+ceTaskId=AYcWgtkz-TCRJsV-Kwrx
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AYcWgtkz-TCRJsV-Kwrx

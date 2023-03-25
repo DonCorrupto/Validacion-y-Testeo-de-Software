@@ -13,6 +13,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
 
+   //await Student.deleteMany();
    await mongoose.disconnect();
 });
 
@@ -34,6 +35,20 @@ describe("POST /api/student", () => {
       expect(response.body.carrera).toEqual(newStudent.carrera);
       expect(response.ok).toBe(true);
    })
+
+   test("Error al mandar un post", async () => {
+
+      const newEstudiante = { nombre: 'Simon', cedula: "123456789", carrera: "Ingenieria de Sistemas" };
+
+      const response = await request(app).post("/api/student").send(newEstudiante);
+
+      //console.log(response.body.message.errors);
+      
+      expect(response.body.message._message).toBe("Student validation failed");
+      expect(response.body.message.name).toBe("ValidationError");
+      
+   })
+
 })
 
 
@@ -55,6 +70,37 @@ describe("GET /api/student ", () => {
 
 
    })
+})
+
+
+describe("GET by ID /api/student ", () => {
+
+   const student = new Student({ nombre: 'Simon', apellido: 'Londoño', cedula: "123456789", carrera: "Ingenieria de Sistemas" });
+
+   test("deberia retornar un estudiante", async () => {
+
+      await student.save();
+      const id = student._id.toString();
+      const response = await request(app).get(`/api/student/${id}`)
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toBeInstanceOf(Object)
+      expect(response.body._id).toEqual(student._id.toString());
+      expect(response.body.nombre).toEqual(student.nombre);
+      expect(response.body.apellido).toEqual(student.apellido);
+      expect(response.body.cedula).toEqual(student.cedula);
+      expect(response.body.carrera).toEqual(student.carrera);
+      expect(response.ok).toBe(true);
+
+   })
+
+   test("Error al obtener un estudiante", async () => {
+      const id = "641e12b5fb566f133568b000";
+      const response = await request(app).get(`/api/student/${id}`)
+
+      expect(response.body).toBe(null);
+   })
+   
 })
 
 
@@ -81,6 +127,24 @@ describe("PUT /api/student", () => {
       expect(response.ok).toBe(true);
       expect(response.body.acknowledged).toEqual(true);
       expect(response.body.modifiedCount).toEqual(1);
+   })
+
+
+   test("Error al mandar un put", async () => {
+      await student.save();
+      const id = student._id.toString()
+
+      const updateEstudiantes = {
+         nombre: "Simon",
+         cedula: "123456789",
+         carrera: "Ingenieria de Sistemas"
+      }
+
+      const response = await request(app).put(`/api/student/${id}`).send(updateEstudiantes)
+
+
+      expect(response.body.modifiedCount).toBe(0);
+      expect(response.body.upsertedId).toBe(null);
    })
 })
 

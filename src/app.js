@@ -12,11 +12,6 @@ app.use('/api', studentRoutes);
 
 app.use((req, res)=>{
 
-    res.status(200).send({
-        ok: true,
-        message: "API Funcionando",
-    })
-
     res.status(404).send({
         ok: false,
         message: "Endpoint no encontrado.",

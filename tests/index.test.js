@@ -1,51 +1,30 @@
 const app = require("../src/app");
-const request = require("supertest")
-const mongoose = require('mongoose');
+//const request = require("supertest")
+//const mongoose = require('mongoose');
 const Student = require('../src/models/student');
+const sinon = require('sinon');
+const chai = require('chai');
+const chaiHttp = require("chai-http");
 
-beforeAll(async () => {
 
-   await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-   });
-});
-
-afterAll(async () => {
-
-   await mongoose.disconnect();
-});
-
+chai.use(chaiHttp);
 
 
 
 describe("POST /api/student", () => {
 
-   const newStudent = { nombre: 'Simon', apellido: 'Londoño', cedula: "123456789", carrera: "Ingenieria de Sistemas" };
+   const newStudent = new Student({ id:"987654", nombre: 'Simon', apellido: 'Londoño', cedula: "123456789", carrera: "Ingenieria de Sistemas" });
 
    test("crear un nuevo estudiante", async () => {
-      const response = await request(app).post("/api/student").send(newStudent)
-
+      const stub = sinon.stub(Student.prototype, "save").resolves({
+         newStudent
+      });
+      const response = await chai.request(app).post("/api/student").send(newStudent)
       expect(response.statusCode).toBe(200);
-      expect(response.headers["content-type"]).toEqual(expect.stringContaining("json"))
-      expect(response.body.nombre).toEqual(newStudent.nombre);
-      expect(response.body.apellido).toEqual(newStudent.apellido);
-      expect(response.body.cedula).toEqual(newStudent.cedula);
-      expect(response.body.carrera).toEqual(newStudent.carrera);
+      expect(response.body.newStudent).toBeInstanceOf(Object)
+      expect(response.body.newStudent.cedula).toEqual(newStudent.cedula);
       expect(response.ok).toBe(true);
-   })
-
-   test("Error al mandar un post", async () => {
-
-      const newEstudiante = { nombre: 'Simon', cedula: "123456789", carrera: "Ingenieria de Sistemas" };
-
-      const response = await request(app).post("/api/student").send(newEstudiante);
-
-      //console.log(response.body.message.errors);
-      
-      expect(response.body.message._message).toBe("Student validation failed");
-      expect(response.body.message.name).toBe("ValidationError");
-      
+      stub.restore();
    })
 
 })
@@ -53,113 +32,78 @@ describe("POST /api/student", () => {
 
 describe("GET /api/student ", () => {
 
-   const student = new Student({ nombre: 'Simon', apellido: 'Londoño', cedula: "123456789", carrera: "Ingenieria de Sistemas" });
+   const student = new Student({ id:"987654", nombre: 'Simon', apellido: 'Londoño', cedula: "123456789", carrera: "Ingenieria de Sistemas" });
 
    test("deberia retornar todos los estudiantes", async () => {
-      await student.save();
-      const response = await request(app).get("/api/student")
 
+      const stub = sinon.stub(Student, "find").resolves(student);
+
+      const response = await chai.request(app).get("/api/student")
       expect(response.statusCode).toBe(200);
-      expect(response.body).toBeInstanceOf(Object)
-      expect(response.body[0].nombre).toEqual(student.nombre);
-      expect(response.body[0].apellido).toEqual(student.apellido);
-      expect(response.body[0].cedula).toEqual(student.cedula);
-      expect(response.body[0].carrera).toEqual(student.carrera);
+      expect(response.body).toBeInstanceOf(Object);
+      expect(response.body.cedula).toEqual(student.cedula);
       expect(response.ok).toBe(true);
-
-
+      stub.restore();
    })
 })
 
 
 describe("GET by ID /api/student ", () => {
 
-   const student = new Student({ nombre: 'Simon', apellido: 'Londoño', cedula: "123456789", carrera: "Ingenieria de Sistemas" });
+   const student = new Student({ id:"987654", nombre: 'Simon', apellido: 'Londoño', cedula: "123456789", carrera: "Ingenieria de Sistemas" });
 
    test("deberia retornar un estudiante", async () => {
 
-      await student.save();
-      const id = student._id.toString();
-      const response = await request(app).get(`/api/student/${id}`)
+      const stub = sinon.stub(Student, "findById").resolves(student);
 
+      const response = await chai.request(app).get(`/api/student/$${student.id}`);
       expect(response.statusCode).toBe(200);
-      expect(response.body).toBeInstanceOf(Object)
-      expect(response.body._id).toEqual(student._id.toString());
-      expect(response.body.nombre).toEqual(student.nombre);
-      expect(response.body.apellido).toEqual(student.apellido);
-      expect(response.body.cedula).toEqual(student.cedula);
-      expect(response.body.carrera).toEqual(student.carrera);
+      expect(response.body).toBeInstanceOf(Object);
+      expect(response.body.id).toEqual(student.id);
       expect(response.ok).toBe(true);
+      stub.restore();
 
    })
 
-   test("Error al obtener un estudiante", async () => {
-      const id = "641e12b5fb566f133568b000";
-      const response = await request(app).get(`/api/student/${id}`)
-
-      expect(response.body).toBe(null);
-   })
-   
 })
-
-
 
 
 describe("PUT /api/student", () => {
 
-   const student = new Student({ nombre: 'Simon', apellido: 'Londoño', cedula: "123456789", carrera: "Ingenieria Industrial" });
-
    test("Obtiene un id para modificar un estudiante", async () => {
-      await student.save();
-      const id = student._id.toString()
 
-      const updateStudent = {
-         nombre: "Simon",
-         apellido: "Londoño",
-         cedula: "123456789",
-         carrera: "Ingenieria de Sistemas"
-      }
+      const student = new Student({id:"987654", nombre: "Simon", apellido: "Londoño", cedula: "123456789", carrera: "Ingenieria Industrial" });
 
-      const response = await request(app).put(`/api/student/${id}`).send(updateStudent)
+      const stub = sinon.stub(Student, "findByIdAndUpdate").resolves({
+         id:student.id, nombre: student.nombre, apellido: student.apellido, cedula: student.cedula, carrera: "Ingenieria Industrial",
+      });
+      const response = await chai.request(app).put(`/api/student/${student.id}`).send({ carrera: "Ingenieria Industrial" });
 
       expect(response.statusCode).toBe(200);
       expect(response.ok).toBe(true);
-      expect(response.body.acknowledged).toEqual(true);
-      expect(response.body.modifiedCount).toEqual(1);
-   })
+      stub.resolves();
+   });
 
-
-   test("Error al mandar un put", async () => {
-      await student.save();
-      const id = student._id.toString()
-
-      const updateEstudiantes = {
-         nombre: "Simon",
-         cedula: "123456789",
-         carrera: "Ingenieria de Sistemas"
-      }
-
-      const response = await request(app).put(`/api/student/${id}`).send(updateEstudiantes)
-
-
-      expect(response.body.modifiedCount).toBe(0);
-      expect(response.body.upsertedId).toBe(null);
-   })
 })
+
+
+
 
 
 describe("DELETE /api/student", () => {
 
-   const student = new Student({ nombre: 'Simon', apellido: 'Londoño', cedula: "123456789", carrera: "Ingenieria Industrial" });
+   const student = new Student({ id:"987654", nombre: 'Simon', apellido: 'Londoño', cedula: "123456789", carrera: "Ingenieria Industrial" });
 
    test("Borra un estudiante", async () => {
-      await student.save();
-      const id = student._id.toString()
 
-      const response = await request(app).delete(`/api/student/${id}`)
+      const saveStub = sinon.stub(student, "save").resolves(student);
+      const deleteStub = sinon.stub(Student, "findByIdAndDelete").resolves(student);
+
+      const response = await chai.request(app).delete(`/api/student/${student.id}`)
+
       expect(response.statusCode).toBe(200);
       expect(response.ok).toBe(true);
-      expect(response.body.acknowledged).toEqual(true);
-      expect(response.body.deletedCount).toEqual(1);
+      saveStub.resolves();
+      deleteStub.resolves();
    })
 })

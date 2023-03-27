@@ -13,15 +13,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chai": "^4.3.7",
+    "chai-http": "^4.3.0",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "csurf": "^1.11.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "helmet": "^6.0.1",
-    "istanbul": "^0.4.5",
     "jest-sonar-reporter": "^2.0.0",
-    "mongodb-memory-server": "^8.12.1"
+    "mongodb": "^5.1.0",
+    "sinon": "^15.0.3"
   },
   "devDependencies": {
     "jest": "^29.5.0",

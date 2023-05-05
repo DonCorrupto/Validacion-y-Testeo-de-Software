@@ -1,44 +1,48 @@
-name: Pipeline CI
+name: CI
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    branches:
+      - main
 
 jobs:
-  compile:
-
+  build:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [14.x]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        
-    - name: compile
-      run: npm start
-      
-    - name: unit test  
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tests
       run: npm test
-      
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@v1.9
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+    - name: SonarCloud scan
+      uses: sonarsource/sonarcloud-github-action@master
+      with:
+        organization: "your-organization"
+        project: "your-project"
+        token: ${{ secrets.SONAR_TOKEN }}
 
-    - name: SonarQube Quality Gate Check
-      uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: Upload coverage
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage
+        path: coverage
+
+    - name: Deploy to production
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo "Deploying to production..."
+        # Add deployment steps here
+

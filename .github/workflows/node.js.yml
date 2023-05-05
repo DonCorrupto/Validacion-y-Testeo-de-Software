@@ -29,10 +29,10 @@ jobs:
 
     - name: SonarCloud scan
       uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        organization: "J_Alzate"
-        project: "Validacion"
-        token: ${{ secrets.SONAR_TOKEN }}
+        projectBaseDir: './'
 
     - name: Upload coverage
       uses: actions/upload-artifact@v2

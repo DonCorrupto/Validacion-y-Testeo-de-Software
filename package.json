@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "compile": "tsc",
+
     "test": "jest --coverage",
     "testpost": "jest test/testPost.test.js",
     "start": "node src/index.js",

@@ -1,57 +1,40 @@
-name: CI
+name: Pipeline CI
 
 on:
   push:
-    branches:
-      - master
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 jobs:
-  build:
+  compile:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [14.x]
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-    - name: Set up Node.js
+    - name: Setup Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: '14.x'
 
     - name: Install dependencies
       run: npm install
 
-    - name: Run tests
-      run: npm test
+    - name: Compile
+      run: npm run compile
+
+    - name: Unit test
+      run: npm run test
 
     - name: SonarCloud Scan
-
       uses: SonarSource/sonarcloud-github-action@v1.9
-
       env:
-
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-          
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: SonarQube Quality Gate Check
-
-      uses: SonarSource/sonarqube-quality-gate-action@v1.1.0  
-
+      uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
       env:
-
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-    - name: Deploy to production
-      if: github.ref == 'refs/heads/main'
-      run: |
-        echo "Deploying to production..."
-        # Add deployment steps here
-
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

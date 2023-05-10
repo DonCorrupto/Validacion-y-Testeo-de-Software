@@ -2,10 +2,10 @@ name: Pipeline CI
 on:
   pull_request:
    branches:
-     - main
+     - master
   push:
     branches:
-      - main
+      - master
 jobs:
   Build_and_Test:
     name: Checkout
@@ -22,8 +22,6 @@ jobs:
             postgres
       - name: Compile
         run: npm install 
-      - name: Set-up prisma
-        run: cd src && npx prisma generate && npx prisma migrate dev --name init
       - name: Test and coverage
         run: npm test
       - name: SonarCloud Scan

@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-
-    "testpost": "jest test/testPost.test.js",
-    "dev": "nodemon src/index.js",
     "test": "jest --coverage",
+    "testpost": "jest test/testPost.test.js",
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
   },
   "keywords": [],
   "author": "",

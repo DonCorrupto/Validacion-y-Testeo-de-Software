@@ -27,21 +27,18 @@ jobs:
     - name: Run tests
       run: npm test
 
-    - name: SonarCloud scan
-      uses: sonarsource/sonarcloud-github-action@master
-      with:
-        organization: "J_Alzate"
-        project: "Validacion"
-        token: ${{ secrets.SONAR_TOKEN }}
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
 
-    - name: Upload coverage
-      uses: actions/upload-artifact@v2
-      with:
-        name: coverage
-        path: coverage
-
-    - name: Deploy to production
-      if: github.ref == 'refs/heads/main'
-      run: |
-        echo "Deploying to production..."
-        # Add deployment steps here
+    # Check the Quality Gate status.
+    - name: SonarQube Quality Gate check
+      uses: sonarsource/sonarqube-quality-gate-action@master
+    # Force to fail step after specific time.
+      timeout-minutes: 5
+      env:
+        SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+    - name: "Example show SonarQube Quality Gate Status value"
+      run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
